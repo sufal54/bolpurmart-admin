@@ -14,6 +14,8 @@ import {
   ChevronDown,
   MoreHorizontal,
   Store,
+  CheckCircle,
+  Circle,
 } from "lucide-react";
 
 import { toast } from "@/hooks/use-toast";
@@ -507,9 +509,9 @@ export function AdminNotificationBell({
                       className={`p-4 border-b border-border hover:bg-muted/50 transition-colors cursor-pointer ${getNotificationBackgroundColor(
                         notification
                       )} ${index === displayedNotifications.length - 1 &&
-                          !hasMoreNotifications
-                          ? "border-b-0"
-                          : ""
+                        !hasMoreNotifications
+                        ? "border-b-0"
+                        : ""
                         }`}
                       onClick={() => handleNotificationItemClick(notification)}
                     >
@@ -565,6 +567,12 @@ export function AdminNotificationBell({
                                 <AlertTriangle size={10} className="mr-1" />
                                 Priority
                               </span>
+                            )}
+                            {notification.isRead ? (
+                              <CheckCircle size={14} className="text-green-500 ml-2" />
+
+                            ) : (
+                              <Circle size={10} className="text-primary ml-2" />
                             )}
                           </div>
                         </div>
