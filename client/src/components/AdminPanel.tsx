@@ -898,8 +898,8 @@ const AdminPanel: React.FC = () => {
               <button
                 onClick={() => setActiveView(item.id)}
                 className={`w-full group relative flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 ${isActive
-                    ? 'bg-gradient-to-r from-primary to-accent text-white shadow-md shadow-primary/25'
-                    : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                  ? 'bg-gradient-to-r from-primary to-accent text-white shadow-md shadow-primary/25'
+                  : 'text-muted-foreground hover:bg-muted hover:text-foreground'
                   }`}
                 data-testid={`nav-${item.id}`}
               >
@@ -1103,7 +1103,7 @@ const AdminPanel: React.FC = () => {
                       </p>
                       <div className="flex items-center gap-2">
                         <span className={`text-sm flex items-center gap-1 ${metric.changeType === 'positive' ? 'text-green-600' :
-                            metric.changeType === 'negative' ? 'text-red-600' : 'text-gray-600'
+                          metric.changeType === 'negative' ? 'text-red-600' : 'text-gray-600'
                           }`}>
                           {metric.changeType === 'positive' && <ArrowUp className="w-3 h-3" />}
                           {metric.changeType === 'negative' && <ArrowDown className="w-3 h-3" />}

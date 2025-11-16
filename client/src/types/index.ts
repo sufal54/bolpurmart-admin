@@ -204,7 +204,7 @@ export interface DeliverySlot {
 export interface Order {
   id: string;
   orderNumber: string;
-  
+
   // Customer Information
   customerId: string;
   customerName: string;
@@ -214,19 +214,19 @@ export interface Order {
   // Delivery Information
   deliveryAddress: Address;
   items: OrderItem[];
-  
+
   // Pricing
   subtotal: number;
   deliveryFee: number;
   taxes: number;
   discount: number;
   total: number;
-  
+
   // Status Management
   status: "placed" | "confirmed" | "preparing" | "out_for_delivery" | "delivered" | "cancelled" | "refunded";
   paymentStatus: "pending" | "completed" | "failed" | "refunded";
   paymentMethod: "cash_on_delivery" | "upi_online";
-  
+
   // Payment Details (Union type for different payment methods)
   paymentDetails?: {
     // For UPI payments - all required
@@ -238,7 +238,7 @@ export interface Order {
     // For COD payments - only verification status required
     verificationStatus: "pending" | "verified" | "rejected";
   };
-  
+
   // Delivery Information
   deliverySlot: {
     type: "immediate" | "express" | "scheduled";
@@ -249,11 +249,11 @@ export interface Order {
     scheduledDate?: string;
     scheduledTime?: string;
   };
-  
+
   // Additional Information
   notes?: string;
   specialInstructions?: string;
-  
+
   // Order Tracking
   orderTracking?: {
     placedAt: Date;
@@ -262,16 +262,16 @@ export interface Order {
     outForDeliveryAt?: Date;
     deliveredAt?: Date;
   };
-  
+
   // Timestamps
   createdAt: Date;
   updatedAt: Date;
-  
+
   // Order Properties
   isRefundable: boolean;
   isCancellable: boolean;
   estimatedDeliveryTime: Date;
-  
+
   // Customer Feedback
   rating?: number;
   review?: string;
@@ -328,6 +328,23 @@ export interface OrderNotification {
   createdAt: string;
   priority: "low" | "normal" | "high";
 }
+
+export interface DeliveryPartner {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  password?: string;
+  vehicleNumber: string;
+  vehicleType: string;
+  rating: number;
+  status: "online" | "offline";
+  totalDeliveries: number;
+  adminApproved: boolean;
+  createdAt: Date | any;
+  updatedAt: Date | any;
+}
+
 
 export interface AdminNotification {
   id: string;

@@ -25,8 +25,10 @@ import type {
   DashboardMetrics,
   TimeSlot,
   UpiPaymentMethod,
+  DeliveryPartner,
 } from "@/types";
 import { LoginPage } from "./login-page";
+import { PartnersManagement } from "@/components/Partners/partners-management";
 
 function AdminPanelContent() {
   // Auth state
@@ -46,6 +48,8 @@ function AdminPanelContent() {
   const [timeSlots, setTimeSlots] = useState<TimeSlot[]>([]);
   const [timeRules, setTimeRules] = useState<TimeRulesConfig>({});
   const [upiMethods, setUpiMethods] = useState<UpiPaymentMethod[]>([]);
+  const [deliveryPartners, setDeliveryPartners] = useState<DeliveryPartner[]>([]);
+  const [deliveries, setDeliveries] = useState<any[]>([]);
 
   // Loading states
   const [loading, setLoading] = useState({
@@ -55,6 +59,7 @@ function AdminPanelContent() {
     orders: true,
     users: true,
     categories: true,
+    deliveryPartners: true,
     timeSlots: true,
     timeRules: true,
   });
@@ -198,6 +203,67 @@ function AdminPanelContent() {
     loading.timeSlots,
     loading.timeRules,
   ]);
+
+  useEffect(() => {
+    const unsubscribePartners = FirebaseService.subscribeToCollection<DeliveryPartner>(
+      "deliveryPartners",
+      (partnersData) => {
+        setDeliveryPartners(partnersData);
+        setLoading((prev) => ({ ...prev, deliveryPartners: false }));
+      }
+    );
+
+    return () => {
+      unsubscribePartners();
+    };
+  }, []);
+
+  useEffect(() => {
+    const unsubscribeDeliveries = FirebaseService.subscribeToCollection<any>(
+      "deliveries",
+      (deliveriesData) => {
+        setDeliveries(deliveriesData);
+        setLoading((prev) => ({ ...prev, deliveries: false }));
+      }
+    );
+
+    return () => unsubscribeDeliveries();
+  }, []);
+
+
+  // CREATE
+  const handleCreatePartner = async (partnerData: any) => {
+    try {
+      await FirebaseService.create("deliveryPartners", partnerData);
+      toast({ title: "Success", description: `Partner "${partnerData.name}" added.` });
+    } catch (error: any) {
+      toast({ title: "Error", description: error.message || "Failed to add partner", variant: "destructive" });
+      throw error;
+    }
+  };
+
+  // UPDATE
+  const handleUpdatePartner = async (id: string, partnerData: any) => {
+    try {
+      await FirebaseService.update("deliveryPartners", id, partnerData);
+      toast({ title: "Success", description: "Partner updated successfully" });
+    } catch (error: any) {
+      toast({ title: "Error", description: error.message || "Failed to update partner", variant: "destructive" });
+      throw error;
+    }
+  };
+
+  // DELETE
+  const handleDeletePartner = async (id: string) => {
+    try {
+      await FirebaseService.delete("deliveryPartners", id);
+      toast({ title: "Success", description: "Partner deleted successfully" });
+    } catch (error: any) {
+      toast({ title: "Error", description: error.message || "Failed to delete partner", variant: "destructive" });
+      throw error;
+    }
+  };
+
 
   // Helper function to safely get Date from createdAt
   const getDateFromTimestamp = (timestamp: any): Date => {
@@ -840,6 +906,25 @@ function AdminPanelContent() {
             onRefresh={handleRefreshOrders}
           />
         );
+      case "partners":
+        return (
+          <PartnersManagement
+            partners={deliveryPartners.map((dp) => ({
+              ...dp,
+              status: dp.status === "online" ? "active" : "inactive",
+              createdAt: dp.createdAt instanceof Date ? dp.createdAt : dp.createdAt.toDate?.(),
+            })) as any}
+            loading={loading.deliveryPartners}
+            onCreatePartner={handleCreatePartner}
+            onUpdatePartner={handleUpdatePartner}
+            onDeletePartner={handleDeletePartner}
+            onRefresh={async () => {
+              setLoading((prev) => ({ ...prev, deliveryPartners: true }));
+              setLoading((prev) => ({ ...prev, deliveryPartners: false }));
+            }} deliveries={deliveries} />
+
+        );
+
       case "vendors":
         return (
           <VendorsManagement
@@ -946,6 +1031,7 @@ function AdminPanelContent() {
             totalVendors: vendors.length,
             pendingOrders: dashboardMetrics.pendingOrders,
             totalUsers: users.length,
+            totalPartners: deliveryPartners.length,
           }}
         />
 

@@ -31,6 +31,7 @@ interface SidebarProps {
     totalVendors: number;
     pendingOrders: number;
     totalUsers: number;
+    totalPartners: number;
   };
 }
 
@@ -64,6 +65,14 @@ const navigationItems = [
     desc: "Supplier Network",
     countKey: "totalVendors" as const,
     roles: ["admin", "subadmin"], // Available for both admin and subadmin
+  },
+  {
+    id: "partners",
+    icon: Users,
+    label: "Partners",
+    desc: "Delivery Partners Management",
+    countKey: "totalPartners" as const,
+    roles: ["admin", "subadmin"],
   },
   {
     id: "orders",
@@ -107,7 +116,7 @@ export function Sidebar({
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 
   // ✅ Filter navigation items based on user role
-  const allowedNavigationItems = navigationItems.filter(item => 
+  const allowedNavigationItems = navigationItems.filter(item =>
     item.roles.includes(currentUser.role)
   );
 
@@ -189,10 +198,9 @@ export function Sidebar({
       <aside
         className={`
           fixed lg:static inset-y-0 left-0 z-50 w-72
-          ${
-            isMobileOpen
-              ? "translate-x-0"
-              : "-translate-x-full lg:translate-x-0"
+          ${isMobileOpen
+            ? "translate-x-0"
+            : "-translate-x-full lg:translate-x-0"
           }
           transition-transform duration-300 ease-in-out
           bg-card border-r border-border 
@@ -242,26 +250,23 @@ export function Sidebar({
                 <div key={item.id}>
                   <Button
                     onClick={() => handleNavClick(item.id)}
-                    className={`w-full group relative flex items-center space-x-3 py-[1.6rem] rounded-xl transition-all duration-200 ${
-                      isActive
-                        ? "bg-gradient-to-r from-primary to-accent text-white shadow-md shadow-primary/25"
-                        : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                    }`}
+                    className={`w-full group relative flex items-center space-x-3 py-[1.6rem] rounded-xl transition-all duration-200 ${isActive
+                      ? "bg-gradient-to-r from-primary to-accent text-white shadow-md shadow-primary/25"
+                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                      }`}
                     variant="ghost"
                   >
                     <Icon
-                      className={`w-5 h-5 ${
-                        isActive ? "text-white" : ""
-                      } flex-shrink-0`}
+                      className={`w-5 h-5 ${isActive ? "text-white" : ""
+                        } flex-shrink-0`}
                     />
                     <div className="flex-1 text-left min-w-0">
                       <span className="font-medium block truncate">
                         {item.label}
                       </span>
                       <p
-                        className={`text-xs truncate ${
-                          isActive ? "text-white/80" : "text-muted-foreground"
-                        }`}
+                        className={`text-xs truncate ${isActive ? "text-white/80" : "text-muted-foreground"
+                          }`}
                       >
                         {item.desc}
                       </p>
@@ -269,11 +274,10 @@ export function Sidebar({
                     {count !== undefined && (
                       <Badge
                         variant={isActive ? "secondary" : "outline"}
-                        className={`text-xs flex-shrink-0 ${
-                          isActive
-                            ? "bg-white/20 text-white border-white/30"
-                            : ""
-                        }`}
+                        className={`text-xs flex-shrink-0 ${isActive
+                          ? "bg-white/20 text-white border-white/30"
+                          : ""
+                          }`}
                       >
                         {count}
                       </Badge>
