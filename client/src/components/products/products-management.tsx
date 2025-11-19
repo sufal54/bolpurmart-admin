@@ -128,11 +128,10 @@ export function ProductsManagement({
         {[1, 2, 3, 4, 5].map((star) => (
           <Star
             key={star}
-            className={`${starSize} ${
-              star <= Math.round(safeRating)
+            className={`${starSize} ${star <= Math.round(safeRating)
                 ? "text-yellow-500 fill-yellow-500"
                 : "text-gray-300"
-            }`}
+              }`}
           />
         ))}
       </div>
@@ -181,8 +180,8 @@ export function ProductsManagement({
               {cat.name}
             </Badge>
           )) || (
-            <span className="text-muted-foreground text-sm">No categories</span>
-          )}
+              <span className="text-muted-foreground text-sm">No categories</span>
+            )}
         </div>
       ),
     },
@@ -237,9 +236,8 @@ export function ProductsManagement({
         return (
           <div className="flex items-center gap-2">
             <span
-              className={`${
-                stockValue < 10 ? "text-red-600" : "text-foreground"
-              }`}
+              className={`${stockValue < 10 ? "text-red-600" : "text-foreground"
+                }`}
             >
               {stockValue}
             </span>
@@ -284,8 +282,8 @@ export function ProductsManagement({
               {vendor.name}
             </Badge>
           )) || (
-            <span className="text-muted-foreground text-sm">No vendors</span>
-          )}
+              <span className="text-muted-foreground text-sm">No vendors</span>
+            )}
         </div>
       ),
     },
@@ -473,28 +471,28 @@ export function ProductsManagement({
   };
 
   // Prepare data for export with safe rating handling
-const exportData: ProductWithExportData[] = filteredProducts.map((product) => {
-  const safeRating = getSafeRating(product);
-  const safeTotalRatings = getSafeTotalRatings(product);
-  
-  // Format price info for export - with safe checking
-  const priceInfo = product.hasDiscount && 
-                   product.discountedPrice !== undefined && 
-                   product.discountedPrice !== null
-    ? `₹${product.discountedPrice} (${product.discountPercentage || 0}% OFF from ₹${product.price})`
-    : `₹${product.price}`;
-  
-  return {
-    ...product,
-    categoryNames: product.categories?.map(cat => cat.name).join(", ") || "No categories",
-    vendorNames: product.vendors?.map(vendor => vendor.name).join(", ") || "No vendors",
-    availableStatus: product.available ? "Available" : "Unavailable",
-    ratingInfo: safeRating > 0 
-      ? `${safeRating.toFixed(1)} stars (${safeTotalRatings} reviews)`
-      : "No ratings yet",
-    priceInfo,
-  };
-});
+  const exportData: ProductWithExportData[] = filteredProducts.map((product) => {
+    const safeRating = getSafeRating(product);
+    const safeTotalRatings = getSafeTotalRatings(product);
+
+    // Format price info for export - with safe checking
+    const priceInfo = product.hasDiscount &&
+      product.discountedPrice !== undefined &&
+      product.discountedPrice !== null
+      ? `₹${product.discountedPrice} (${product.discountPercentage || 0}% OFF from ₹${product.price})`
+      : `₹${product.price}`;
+
+    return {
+      ...product,
+      categoryNames: product.categories?.map(cat => cat.name).join(", ") || "No categories",
+      vendorNames: product.vendors?.map(vendor => vendor.name).join(", ") || "No vendors",
+      availableStatus: product.available ? "Available" : "Unavailable",
+      ratingInfo: safeRating > 0
+        ? `${safeRating.toFixed(1)} stars (${safeTotalRatings} reviews)`
+        : "No ratings yet",
+      priceInfo,
+    };
+  });
 
 
   const totalItems = filteredProducts.length;

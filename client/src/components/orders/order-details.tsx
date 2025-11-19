@@ -37,6 +37,8 @@ import {
 } from "lucide-react";
 import type { Order } from "@/types";
 import { ORDER_STATUSES } from "@/constants";
+import { AdminFirebaseDeliveryService } from "@/services/firebase-admin-deliveries";
+import { AdminFirebaseDeliveryPartnerService } from "@/services/firebase-admin-delivery-partnerService";
 
 interface OrderDetailsProps {
   order: Order;
@@ -60,6 +62,24 @@ export function OrderDetails({
   const [verifyingPayment, setVerifyingPayment] = useState(false);
   const [rejectingPayment, setRejectingPayment] = useState(false);
   const [showPaymentImage, setShowPaymentImage] = useState(false);
+  const [deliveries, setDeliveries] = useState<any[]>([]);
+  const [partners, setPartners] = useState<any[]>([]);
+
+  useEffect(() => {
+    const unsub = AdminFirebaseDeliveryPartnerService.subscribeToPartners(
+      (list) => setPartners(list)
+    );
+    return () => unsub();
+  }, []);
+
+
+  useEffect(() => {
+    const unsub = AdminFirebaseDeliveryService.subscribeToDeliveries(
+      (list) => setDeliveries(list)
+    );
+
+    return () => unsub();
+  }, []);
 
   // Update local order when prop changes (for real-time updates)
   useEffect(() => {
@@ -101,9 +121,9 @@ export function OrderDetails({
   // Handle status update
   const handleStatusUpdate = async (newStatus: Order["status"]) => {
     if (statusUpdating) return;
-    
+
     setStatusUpdating(true);
-    
+
     // Optimistic update
     const updatedOrder = {
       ...localOrder,
@@ -113,7 +133,7 @@ export function OrderDetails({
 
     // Update tracking based on status with proper type safety
     const currentTracking = localOrder.orderTracking || { placedAt: localOrder.createdAt };
-    
+
     if (newStatus === "confirmed" && !currentTracking.confirmedAt) {
       updatedOrder.orderTracking = {
         ...currentTracking,
@@ -139,14 +159,14 @@ export function OrderDetails({
         deliveredAt: new Date(),
       };
       updatedOrder.paymentStatus = "completed" as const;
-      updatedOrder.deliverySlot = { 
-        ...localOrder.deliverySlot, 
-        actualDeliveryTime: new Date() 
+      updatedOrder.deliverySlot = {
+        ...localOrder.deliverySlot,
+        actualDeliveryTime: new Date()
       };
     }
 
     setLocalOrder(updatedOrder);
-    
+
     try {
       await onStatusUpdate(localOrder.id, newStatus);
     } catch (error) {
@@ -306,7 +326,7 @@ export function OrderDetails({
                       <p className="text-sm text-muted-foreground">
                         {formatDate(
                           localOrder.orderTracking?.placedAt ||
-                            localOrder.createdAt
+                          localOrder.createdAt
                         )}
                       </p>
                     </div>
@@ -397,11 +417,10 @@ export function OrderDetails({
                       {Array.from({ length: 5 }, (_, i) => (
                         <Star
                           key={i}
-                          className={`w-4 h-4 ${
-                            i < localOrder.rating!
-                              ? "fill-yellow-400 text-yellow-400"
-                              : "text-gray-300"
-                          }`}
+                          className={`w-4 h-4 ${i < localOrder.rating!
+                            ? "fill-yellow-400 text-yellow-400"
+                            : "text-gray-300"
+                            }`}
                         />
                       ))}
                       <span className="font-medium">{localOrder.rating}/5</span>
@@ -508,8 +527,8 @@ export function OrderDetails({
                         localOrder.paymentStatus === "completed"
                           ? "bg-green-100 text-green-800"
                           : localOrder.paymentStatus === "failed"
-                          ? "bg-red-100 text-red-800"
-                          : "bg-yellow-100 text-yellow-800"
+                            ? "bg-red-100 text-red-800"
+                            : "bg-yellow-100 text-yellow-800"
                       }
                     >
                       {localOrder.paymentStatus?.charAt(0).toUpperCase() +
@@ -526,15 +545,15 @@ export function OrderDetails({
                         verificationStatus === "verified"
                           ? "bg-green-100 text-green-800"
                           : verificationStatus === "rejected"
-                          ? "bg-red-100 text-red-800"
-                          : "bg-yellow-100 text-yellow-800"
+                            ? "bg-red-100 text-red-800"
+                            : "bg-yellow-100 text-yellow-800"
                       }
                     >
                       {verificationStatus === "verified"
                         ? "Verified"
                         : verificationStatus === "rejected"
-                        ? "Rejected"
-                        : "Pending"}
+                          ? "Rejected"
+                          : "Pending"}
                     </Badge>
                   </div>
 

@@ -4,10 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import type { DeliveryPartner } from "@/types/index";
+import type { DeliveryPartner, Order } from "@/types/index";
 
 interface PartnerDetailsProps {
     partner: DeliveryPartner;
+    orders: Order[],
     todayDeliveries: number;
     onClose: () => void;
     onSave: (data: Partial<DeliveryPartner>) => Promise<void>;

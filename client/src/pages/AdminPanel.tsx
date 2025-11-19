@@ -914,6 +914,7 @@ function AdminPanelContent() {
               status: dp.status === "online" ? "active" : "inactive",
               createdAt: dp.createdAt instanceof Date ? dp.createdAt : dp.createdAt.toDate?.(),
             })) as any}
+            orders={orders}
             loading={loading.deliveryPartners}
             onCreatePartner={handleCreatePartner}
             onUpdatePartner={handleUpdatePartner}
@@ -921,7 +922,9 @@ function AdminPanelContent() {
             onRefresh={async () => {
               setLoading((prev) => ({ ...prev, deliveryPartners: true }));
               setLoading((prev) => ({ ...prev, deliveryPartners: false }));
-            }} deliveries={deliveries} />
+            }}
+            deliveries={deliveries}
+          />
 
         );
 

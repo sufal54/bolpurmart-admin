@@ -4,9 +4,12 @@ import { Card, CardContent } from "@/components/ui/card";
 import { DataTable, type Column } from "@/components/ui/data-table";
 import { PartnerDetails } from "./partners-details";
 import type { Order, DeliveryPartner } from "@/types/index";
+import { PartnerOrdersPopup } from "./PartnerOrdersPopup";
+import { Button } from "../ui/button";
 
 interface PartnersManagementProps {
     partners: DeliveryPartner[];
+    orders: Order[];
     deliveries: any[];
     loading?: boolean;
     onCreatePartner: (data: Partial<DeliveryPartner>) => Promise<void>;
@@ -18,6 +21,7 @@ interface PartnersManagementProps {
 export function PartnersManagement({
     partners = [],
     deliveries = [],
+    orders = [],
     loading,
     onCreatePartner,
     onUpdatePartner,
@@ -25,6 +29,8 @@ export function PartnersManagement({
     onRefresh,
 }: PartnersManagementProps) {
     const [selectedPartner, setSelectedPartner] = useState<DeliveryPartner | null>(null);
+    const [openOrdersPartner, setOpenOrdersPartner] = useState<DeliveryPartner | null>(null);
+
     const [searchValue, setSearchValue] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize, setPageSize] = useState(10);
@@ -39,6 +45,18 @@ export function PartnersManagement({
                 (p.phone && p.phone.includes(searchValue))
         );
     }, [partners, searchValue]);
+
+    const filterOrders = (partner: DeliveryPartner) => {
+        const partnerDeliveries = deliveries.filter(
+            (item) => item.deliveryPartnerId === partner.id
+        );
+
+        const orderIds = partnerDeliveries.map((d) => d.orderId);
+        const partnerOrders = orders.filter((o) => orderIds.includes(o.id));
+        return partnerOrders;
+
+
+    }
 
     // Helper: Get today's deliveries for a partner
     const getTodayDeliveryCount = (partnerId: string) => {
@@ -93,9 +111,15 @@ export function PartnersManagement({
             key: "actions",
             title: "Actions",
             render: (_, record) => (
-                <div className="flex gap-2">
-                    <button onClick={() => setSelectedPartner(record)}>Edit</button>
-                    <button onClick={() => onDeletePartner(record.id)}>Delete</button>
+                <div className="flex gap-4">
+                    <Button
+
+                        onClick={() => setOpenOrdersPartner(record)}
+                    >
+                        View Orders
+                    </Button>
+                    <Button onClick={() => setSelectedPartner(record)}>Edit</Button>
+                    <Button className=" hover:bg-red-500" onClick={() => onDeletePartner(record.id)}>Delete</Button>
                 </div>
             ),
         },
@@ -132,9 +156,19 @@ export function PartnersManagement({
                 onRefresh={onRefresh}
             />
 
+            {openOrdersPartner && (
+                <PartnerOrdersPopup
+                    partner={openOrdersPartner}
+                    orders={filterOrders(openOrdersPartner)}
+                    onClose={() => setOpenOrdersPartner(null)}
+                />
+            )}
+
+
             {selectedPartner && (
                 <PartnerDetails
                     partner={selectedPartner}
+                    orders={orders}
                     todayDeliveries={getTodayDeliveryCount(selectedPartner.id)}
                     onClose={() => setSelectedPartner(null)}
                     onSave={(data) => onUpdatePartner(selectedPartner.id, data)}
